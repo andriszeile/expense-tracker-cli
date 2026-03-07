@@ -1,7 +1,7 @@
 from datetime import date, datetime
 
 from storage import load_expenses, save_expenses
-from logic import sum_total, filter_by_month, sum_by_category, get_available_months
+from logic import sum_total, filter_by_month, sum_by_category, get_available_months, search_by_note
 from export import export_to_csv
 
 CATEGORIES = [
@@ -24,7 +24,8 @@ def show_menu():
     print('4) Kopsavilkums pa kategorijām')
     print('5) Dzēst izdevumu')
     print('6) Eksportēt CSV')
-    print('7) Iziet')
+    print('7) Meklēt pēc piezīmes')
+    print('x) Iziet')
     return input('Izvēlies darbību: ').strip()
 
 def get_date_input():
@@ -217,6 +218,34 @@ def export_expenses(expenses):
     export_to_csv(expenses, filename)
     print(f'\nEksportēts: {len(expenses)} ieraksti -> {filename}')
 
+def search_expenses(expenses):
+    '''Meklē izdevumus pēc piezīmes teksta.'''
+    if not expenses:
+        print('\nNav saglabātu izdevumu.')
+        return
+    search_text = input('Ievadi meklējamo tekstu: ').strip()
+    if search_text == '':
+        print('Meklēšanas teksts nav tukšums.')
+        return
+    results = search_by_note(expenses, search_text)
+    if not results:
+        print(f'\nNav atrasts neviens ieraksts ar tekstu "{search_text}".')
+        return
+    print(f'\nMeklēšanas rezultāti tekstam "{search_text}"')
+    print('=' * 70)
+    print(f'{"Nr.":>3} {"Datums":<12} {"Summa":>12} {"Kategorija":<22} Piezīme')
+    print('=' * 70)
+    for i, expense in enumerate(results, start=1):
+        print(
+            f'{i:>3} '
+            f'{expense["date"]:<12} '
+            f'{expense["amount"]:>8.2f} EUR '
+            f'{expense["category"]:<22} '
+            f'{expense["note"]}'
+        )
+    print('-' * 70)
+    print(f'Atrasti ieraksti: {len(results)} | Summa: {sum_total(results):.2f} EUR')
+
 def main():
     '''Galvenā programmas cilpa.'''
     expenses = load_expenses()
@@ -235,6 +264,8 @@ def main():
         elif choice == '6':
             export_expenses(expenses)
         elif choice == '7':
+            search_expenses(expenses)
+        elif choice == 'x':
             print('Programma aizvērta.')
             break
         else:

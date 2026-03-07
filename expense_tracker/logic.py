@@ -42,3 +42,12 @@ def get_available_months(expenses):
             months.append(month)
     months.sort()
     return months
+
+def search_by_note(expenses, text):
+    '''Meklē izdevumus pēc piezīmes teksta daļas.'''
+    results = []
+    search_text = text.lower()
+    for expense in expenses:
+        if search_text in expense['note'].lower():
+            results.append(expense)
+    return results
