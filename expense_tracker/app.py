@@ -1,7 +1,7 @@
 from datetime import date, datetime
 
 from storage import load_expenses, save_expenses
-from logic import sum_total
+from logic import sum_total, filter_by_month, sum_by_category, get_available_months
 
 CATEGORIES = [
     'Ēdiens',
@@ -19,6 +19,9 @@ def show_menu():
     print('-' * 24)
     print('1) Pievienot izdevumu')
     print('2) Parādīt izdevumus')
+    print('3) Filtrēt pēc mēneša')
+    print('4) Kopsavilkums pa kategorijām')
+    print('5) Dzēst izdevumu')    
     print('7) Iziet')
     return input('Izvēlies darbību: ').strip()
 
@@ -110,6 +113,95 @@ def show_expenses(expenses):
     print(f'Kopā: {sum_total(expenses):.2f} EUR | Ierakstu skaits: {len(expenses)}')
     print(row_line)
 
+def filter_expenses_menu(expenses):
+    '''Parāda izdevumus izvēlētajā mēnesī.'''
+    if not expenses:
+        print('\nNav saglabātu izdevumu.')
+        return
+    months = get_available_months(expenses)
+    if not months:
+        print('\nNav pieejamu mēnešu filtrēšanai.')
+        return
+    print('\nPieejamie mēneši:')
+    for i, month in enumerate(months, start=1):
+        print(f'{i}) {month}')
+    while True:
+        choice = input('Izvēlies mēnesi: ').strip()
+        if not choice.isdigit():
+            print('Ievadi mēneša numuru.')
+            continue
+        choice = int(choice)
+        if 1 <= choice <= len(months):
+            selected_month = months[choice - 1]
+            break
+        print('Izvēlies derīgu mēneša numuru.')
+    year, month = selected_month.split('-')
+    filtered = filter_by_month(expenses, int(year), int(month))
+    if not filtered:
+        print('\nŠajā mēnesī izdevumu nav.')
+        return
+    print(f'\nIzdevumi par {selected_month}')
+    print('-' * 70)
+    print(f'{"Datums":<12} {"Summa":>12} {"Kategorija":<22} Piezīme')
+    print('-' * 70)
+    for expense in filtered:
+        print(
+            f'{expense["date"]:<12}'
+            f'{expense["amount"]:>8.2f} EUR '
+            f'{expense["category"]:<22}'
+            f'{expense["note"]}'
+        )
+    print('-' * 70)
+    print(f'Kopā: {sum_total(filtered):.2f} EUR | Ierakstu skaits: {len(filtered)}')
+
+def show_category_summary(expenses):
+    '''Parāda kopsavilkumu pa kategorijām.'''
+    if not expenses:
+        print('\nNav saglabātu izdevumu.')
+        return
+    totals = sum_by_category(expenses)
+    print('\nKopsavilkums pa kategorijām')
+    print('-' * 40)
+    for category, total in totals.items():
+        print(f'{category:<22} {total:>8.2f} EUR')
+    print('-' * 40)
+    print(f'Kopā: {sum_total(expenses):.2f} EUR')
+
+def delete_expense(expenses):
+    '''Dzēš izdevumu pēc numura.'''
+    if not expenses:
+        print('\nNav saglabātu izdevumu.')
+        return
+    print('\nSaglabātie izdevumi')
+    print('-' * 70)
+    for i, expense in enumerate(expenses, start=1):
+        print(
+            f'{i:>2}) '
+            f'{expense["date"]} | '
+            f'{expense["amount"]:.2f} EUR | '
+            f'{expense["category"]} | '
+            f'{expense["note"]}'
+        )
+    print('-' * 70)
+    while True:
+        choice = input('Kuru ierakstu dzēst? (0 - atcelt): ').strip()
+        if not choice.isdigit():
+            print('Ievadi ieraksta numuru.')
+            continue
+        choice = int(choice)
+        if choice == 0:
+            print('Dzēšana atcelta.')
+            return
+        if 1 <= choice <= len(expenses):
+            removed = expenses.pop(choice - 1)
+            save_expenses(expenses)
+            print(
+                f'\nDzēsts: {removed["date"]} | {removed["amount"]:.2f} EUR | '
+                f'{removed["category"]} | {removed["note"]}'
+            )
+            return
+        print('Tāda ieraksta numura nav.')
+
 def main():
     '''Galvenā programmas cilpa.'''
     expenses = load_expenses()
@@ -119,6 +211,12 @@ def main():
             add_expense(expenses)
         elif choice == '2':
             show_expenses(expenses)
+        elif choice == '3':
+            filter_expenses_menu(expenses)
+        elif choice == '4':
+            show_category_summary(expenses)
+        elif choice == '5':
+            delete_expense(expenses)
         elif choice == '7':
             print('Programma aizvērta.')
             break
