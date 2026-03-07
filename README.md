@@ -41,4 +41,4 @@ Datu fails `expenses.json` izveidojas automātiski programmas darbības laikā.
 
 ## Autors
 
-Andris
+Andris - Programmēšanas pamati, 2026
