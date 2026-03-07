@@ -2,6 +2,7 @@ from datetime import date, datetime
 
 from storage import load_expenses, save_expenses
 from logic import sum_total, filter_by_month, sum_by_category, get_available_months
+from export import export_to_csv
 
 CATEGORIES = [
     'Ēdiens',
@@ -21,7 +22,8 @@ def show_menu():
     print('2) Parādīt izdevumus')
     print('3) Filtrēt pēc mēneša')
     print('4) Kopsavilkums pa kategorijām')
-    print('5) Dzēst izdevumu')    
+    print('5) Dzēst izdevumu')
+    print('6) Eksportēt CSV')
     print('7) Iziet')
     return input('Izvēlies darbību: ').strip()
 
@@ -202,6 +204,19 @@ def delete_expense(expenses):
             return
         print('Tāda ieraksta numura nav.')
 
+def export_expenses(expenses):
+    '''Eksportē izdevumus CSV failā.'''
+    if not expenses:
+        print('\nNav saglabātu izdevumu eksportēšanai.')
+        return
+    filename = input('Faila nosaukums [izdevumi.csv]: ').strip()
+    if filename == '':
+        filename = 'izdevumi.csv'
+    if not filename.lower().endswith('.csv'):
+        filename += '.csv'
+    export_to_csv(expenses, filename)
+    print(f'\nEksportēts: {len(expenses)} ieraksti -> {filename}')
+
 def main():
     '''Galvenā programmas cilpa.'''
     expenses = load_expenses()
@@ -217,6 +232,8 @@ def main():
             show_category_summary(expenses)
         elif choice == '5':
             delete_expense(expenses)
+        elif choice == '6':
+            export_expenses(expenses)
         elif choice == '7':
             print('Programma aizvērta.')
             break
