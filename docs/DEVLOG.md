@@ -15,3 +15,9 @@ Pēc tam pievienoju filtrēšanu pēc mēneša, kopsavilkumu pa kategorijām un 
 ## 4. solis — CSV eksports un dokumentācija
 
 Noslēgumā pievienoju CSV eksporta iespēju, lai izdevumu sarakstu varētu atvērt Excel. Tika sakārtota arī dokumentācija — izveidots `README.md` un šis izstrādes žurnāls. Šis projekts palīdzēja labāk saprast, kā sadalīt programmu moduļos un kā pakāpeniski veidot lielāku Python projektu.
+
+## Papildinājumi un uzlabojumi
+
+Pēc pamatfunkcionalitātes pabeigšanas tika izveidota iespēja meklēt izdevumus pēc piezīmes teksta daļas, kas ļauj ātrāk atrast konkrētus ierakstus. Meklēšana nav atkarīga no lielajiem vai mazajiem burtiem.
+
+Papildus tika nedaudz uzlabots komandrindas interfeiss. Izvēlnē iziešanai no programmas tika nomainīta komanda `x`, kas ir intuitīvāka lietotājam nekā skaitlis.
