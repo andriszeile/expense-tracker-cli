@@ -211,6 +211,7 @@ def export_expenses(expenses):
     '''Eksportē izdevumus CSV failā.'''
     if not expenses:
         print('\nNav saglabātu izdevumu eksportēšanai.')
+        pause()
         return
     filename = input('Faila nosaukums [izdevumi.csv]: ').strip()
     if filename == '':
@@ -245,7 +246,7 @@ def main():
     '''Galvenā programmas cilpa.'''
     expenses = load_expenses()
     while True:
-        choice = show_menu().strip()
+        choice = show_menu()
         if choice == '1':
             add_expense(expenses)
         elif choice == '2':
@@ -261,7 +262,7 @@ def main():
         elif choice == '7':
             search_expenses(expenses)
         elif choice == 'x':
-            print('Programma aizvērta.')
+            print('\nProgramma aizvērta.')
             break
         else:
             print('Izvēlies vienu no pieejamajām darbībām.')
