@@ -33,6 +33,10 @@ def show_menu():
     print('x) Iziet')
     return input('Izvēlies darbību: ').strip()
 
+def pause():
+    '''Pause, lai lietotājs var apskatīt rezultātu, pirms izvēlnes parādīšanas.'''
+    input('\n***Nospied Enter, lai redzētu izvēlni...***')
+
 def print_expenses_table(expenses, title):
     '''Izdevumu tabulas vienotais formāts izdrukai.'''
     print(f'\n{title}')
@@ -113,23 +117,28 @@ def add_expense(expenses):
         f'Pievienots: {expense["date"]} | {expense["category"]} | '
         f'{expense["amount"]:.2f} EUR | {expense["note"]}'
     )
+    pause()
 
 def show_expenses(expenses):
     '''Parāda visus izdevumus.'''
     if not expenses:
         print('\nNav saglabātu izdevumu.')
+        pause()
         return
     print_expenses_table(expenses, 'Izdevumu saraksts')
     print(f'Kopā: {sum_total(expenses):.2f} EUR | Ierakstu skaits: {len(expenses)}')
+    pause()
 
 def filter_expenses_menu(expenses):
     '''Parāda izdevumus izvēlētajā mēnesī.'''
     if not expenses:
         print('\nNav saglabātu izdevumu.')
+        pause()
         return
     months = get_available_months(expenses)
     if not months:
         print('\nNav pieejamu mēnešu filtrēšanai.')
+        pause()
         return
     print('\nPieejamie mēneši:')
     for i, month in enumerate(months, start=1):
@@ -148,14 +157,17 @@ def filter_expenses_menu(expenses):
     filtered = filter_by_month(expenses, int(year), int(month))
     if not filtered:
         print('\nŠajā mēnesī izdevumu nav.')
+        pause()
         return
     print_expenses_table(filtered, f'\nIzdevumi par {selected_month}')
     print(f'Kopā: {sum_total(filtered):.2f} EUR | Ierakstu skaits: {len(filtered)}')
+    pause()
 
 def show_category_summary(expenses):
     '''Parāda kopsavilkumu pa kategorijām.'''
     if not expenses:
         print('\nNav saglabātu izdevumu.')
+        pause()
         return
     totals = sum_by_category(expenses)
     print(HEADER_LINE)
@@ -165,11 +177,13 @@ def show_category_summary(expenses):
         print(f'{category:<22} {total:>8.2f} EUR')
     print(LINE)
     print(f'Kopā: {sum_total(expenses):.2f} EUR')
+    pause()
 
 def delete_expense(expenses):
     '''Dzēš izdevumu pēc numura.'''
     if not expenses:
         print('\nNav saglabātu izdevumu.')
+        pause()
         return
     print_expenses_table(expenses, '\nSaglabātie izdevumi')
     while True:
@@ -180,6 +194,7 @@ def delete_expense(expenses):
         choice = int(choice)
         if choice == 0:
             print('Dzēšana atcelta.')
+            pause()
             return
         if 1 <= choice <= len(expenses):
             removed = expenses.pop(choice - 1)
@@ -188,6 +203,7 @@ def delete_expense(expenses):
                 f'\nDzēsts: {removed["date"]} | {removed["amount"]:.2f} EUR | '
                 f'{removed["category"]} | {removed["note"]}'
             )
+            pause()
             return
         print('Tāda ieraksta numura nav.')
 
@@ -203,22 +219,27 @@ def export_expenses(expenses):
         filename += '.csv'
     export_to_csv(expenses, filename)
     print(f'\nEksportēts: {len(expenses)} ieraksti -> {filename}')
+    pause()
 
 def search_expenses(expenses):
     '''Meklē izdevumus pēc piezīmes teksta.'''
     if not expenses:
         print('\nNav saglabātu izdevumu.')
+        pause()
         return
     search_text = input('Ievadi meklējamo tekstu: ').strip()
     if search_text == '':
         print('Meklēšanas teksts nav tukšums.')
+        pause()
         return
     results = search_by_note(expenses, search_text)
     if not results:
         print(f'\nNav atrasts neviens ieraksts ar tekstu "{search_text}".')
+        pause()
         return
     print_expenses_table(results, f'\nMeklēšanas rezultāti tekstam "{search_text}"')
     print(f'Atrasti ieraksti: {len(results)} | Summa: {sum_total(results):.2f} EUR')
+    pause()
 
 def main():
     '''Galvenā programmas cilpa.'''
