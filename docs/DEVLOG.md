@@ -21,3 +21,5 @@ Noslēgumā pievienoju CSV eksporta iespēju, lai izdevumu sarakstu varētu atv�
 Pēc pamatfunkcionalitātes pabeigšanas tika izveidota iespēja meklēt izdevumus pēc piezīmes teksta daļas, kas ļauj ātrāk atrast konkrētus ierakstus. Meklēšana nav atkarīga no lielajiem vai mazajiem burtiem.
 
 Papildus tika nedaudz uzlabots komandrindas interfeiss. Izvēlnē iziešanai no programmas tika nomainīta komanda `x`, kas ir intuitīvāka lietotājam nekā skaitlis.
+
+Pēc funkcionalitātes pabeigšanas tika nedaudz uzlabots komandrindas interfeiss. Pievienota `pause()` funkcija, kas pēc rezultātu attēlošanas ļauj lietotājam nospiest Enter pirms izvēlnes parādīšanas. Tas padara programmas lietošanu ērtāku, jo rezultāti nepazūd uzreiz pēc darbības izpildes.
