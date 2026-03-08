@@ -4,6 +4,10 @@ from storage import load_expenses, save_expenses
 from logic import sum_total, filter_by_month, sum_by_category, get_available_months, search_by_note
 from export import export_to_csv
 
+WIDTH = 80
+LINE = "-" * WIDTH
+HEADER_LINE = "=" * WIDTH
+
 CATEGORIES = [
     'Ēdiens',
     'Transports',
@@ -16,8 +20,9 @@ CATEGORIES = [
 
 def show_menu():
     '''Parāda izvēlni un nolasa lietotāja izvēli.'''
-    print('\nIzdevumu izsekotājs')
-    print('-' * 24)
+    print(HEADER_LINE)
+    print('Izdevumu izsekotājs')
+    print(HEADER_LINE)
     print('1) Pievienot izdevumu')
     print('2) Parādīt izdevumus')
     print('3) Filtrēt pēc mēneša')
@@ -27,6 +32,22 @@ def show_menu():
     print('7) Meklēt pēc piezīmes')
     print('x) Iziet')
     return input('Izvēlies darbību: ').strip()
+
+def print_expenses_table(expenses, title):
+    '''Izdevumu tabulas vienotais formāts izdrukai.'''
+    print(f'\n{title}')
+    print(HEADER_LINE)
+    print(f'{"Nr.":>4} {"Datums":<12} {"Summa (EUR)":>12} {"Kategorija":<21} Piezīme')
+    print(HEADER_LINE)
+    for i, expense in enumerate(expenses, start = 1):
+        print(
+            f'{i:>3}) '
+            f'{expense["date"]:<12} '
+            f'{expense["amount"]:>8.2f} EUR '
+            f'{expense["category"]:<22}'
+            f'{expense["note"]} '
+        )
+    print(LINE)
 
 def get_date_input():
     '''Nolasa derīgu datumu.'''
@@ -79,7 +100,6 @@ def get_note_input():
 def add_expense(expenses):
     '''Pievieno jaunu izdevumu.'''
     print('\nJauna izdevuma pievienošana')
-    print('-' * 28)
     expense = {
         'date': get_date_input(),
         'amount': get_amount_input(),
@@ -88,33 +108,19 @@ def add_expense(expenses):
     }
     expenses.append(expense)
     save_expenses(expenses)
+    print(LINE)
     print(
-        f'\nPievienots: {expense["date"]} | {expense["category"]} | '
+        f'Pievienots: {expense["date"]} | {expense["category"]} | '
         f'{expense["amount"]:.2f} EUR | {expense["note"]}'
     )
 
 def show_expenses(expenses):
     '''Parāda visus izdevumus.'''
-    head_line = '=' * 70
-    row_line = '-' * 70
     if not expenses:
         print('\nNav saglabātu izdevumu.')
         return
-    print("\nIzdevumu saraksts")
-    print(head_line)
-    print(f'{"Nr.":>3} {"Datums":<12} {"Summa (EUR)":>12} {"Kategorija":<22} Piezīme')
-    print(head_line)
-    for i, expense in enumerate(expenses, start = 1):
-        print(
-            f'{i:>2}. '
-            f'{expense["date"]:<12} '
-            f'{expense["amount"]:>8.2f} EUR '
-            f'{expense["category"]:<22} '
-            f'{expense["note"]}'
-        )
-    print(row_line)
+    print_expenses_table(expenses, 'Izdevumu saraksts')
     print(f'Kopā: {sum_total(expenses):.2f} EUR | Ierakstu skaits: {len(expenses)}')
-    print(row_line)
 
 def filter_expenses_menu(expenses):
     '''Parāda izdevumus izvēlētajā mēnesī.'''
@@ -143,18 +149,7 @@ def filter_expenses_menu(expenses):
     if not filtered:
         print('\nŠajā mēnesī izdevumu nav.')
         return
-    print(f'\nIzdevumi par {selected_month}')
-    print('-' * 70)
-    print(f'{"Datums":<12} {"Summa":>12} {"Kategorija":<22} Piezīme')
-    print('-' * 70)
-    for expense in filtered:
-        print(
-            f'{expense["date"]:<12}'
-            f'{expense["amount"]:>8.2f} EUR '
-            f'{expense["category"]:<22}'
-            f'{expense["note"]}'
-        )
-    print('-' * 70)
+    print_expenses_table(filtered, f'\nIzdevumi par {selected_month}')
     print(f'Kopā: {sum_total(filtered):.2f} EUR | Ierakstu skaits: {len(filtered)}')
 
 def show_category_summary(expenses):
@@ -163,11 +158,12 @@ def show_category_summary(expenses):
         print('\nNav saglabātu izdevumu.')
         return
     totals = sum_by_category(expenses)
-    print('\nKopsavilkums pa kategorijām')
-    print('-' * 40)
+    print(HEADER_LINE)
+    print('Kopsavilkums pa kategorijām')
+    print(HEADER_LINE)
     for category, total in totals.items():
         print(f'{category:<22} {total:>8.2f} EUR')
-    print('-' * 40)
+    print(LINE)
     print(f'Kopā: {sum_total(expenses):.2f} EUR')
 
 def delete_expense(expenses):
@@ -175,17 +171,7 @@ def delete_expense(expenses):
     if not expenses:
         print('\nNav saglabātu izdevumu.')
         return
-    print('\nSaglabātie izdevumi')
-    print('-' * 70)
-    for i, expense in enumerate(expenses, start=1):
-        print(
-            f'{i:>2}) '
-            f'{expense["date"]} | '
-            f'{expense["amount"]:.2f} EUR | '
-            f'{expense["category"]} | '
-            f'{expense["note"]}'
-        )
-    print('-' * 70)
+    print_expenses_table(expenses, '\nSaglabātie izdevumi')
     while True:
         choice = input('Kuru ierakstu dzēst? (0 - atcelt): ').strip()
         if not choice.isdigit():
@@ -231,19 +217,7 @@ def search_expenses(expenses):
     if not results:
         print(f'\nNav atrasts neviens ieraksts ar tekstu "{search_text}".')
         return
-    print(f'\nMeklēšanas rezultāti tekstam "{search_text}"')
-    print('=' * 70)
-    print(f'{"Nr.":>3} {"Datums":<12} {"Summa":>12} {"Kategorija":<22} Piezīme')
-    print('=' * 70)
-    for i, expense in enumerate(results, start=1):
-        print(
-            f'{i:>3} '
-            f'{expense["date"]:<12} '
-            f'{expense["amount"]:>8.2f} EUR '
-            f'{expense["category"]:<22} '
-            f'{expense["note"]}'
-        )
-    print('-' * 70)
+    print_expenses_table(results, f'\nMeklēšanas rezultāti tekstam "{search_text}"')
     print(f'Atrasti ieraksti: {len(results)} | Summa: {sum_total(results):.2f} EUR')
 
 def main():
